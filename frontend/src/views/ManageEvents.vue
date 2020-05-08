@@ -314,7 +314,7 @@
                                                             >
                                                                 <v-text-field
                                                                         class="purple-input"
-                                                                        label="$t('manageEvents.countryLabel')"
+                                                                        :label="$t('manageEvents.countryLabel')"
                                                                         v-model="editedLocation.country"
                                                                         name="country"
                                                                         required

@@ -12,6 +12,7 @@ export default {
     searchLabel: "Search",
     actionsLabel: "Actions",
     cancelLabel:"Cancel",
+    closeLabel: "Close",
     okLabel:"OK",
     saveLabel: "Save",
     pictureUploadError: "There was an error while uploading the picture. Please try again!",
@@ -150,7 +151,7 @@ export default {
     },
     manageEventTypes: {
         manageEventTypesLabel: "Manage event types",
-        manageEventTypesTexT: "You may delete, edit or add event types",
+        manageEventTypesText: "You may delete, edit or add event types",
         typeName:"Event Type Name",
         iconLabel: "Icon",
         bannerLabel: "Banner",
@@ -195,6 +196,7 @@ export default {
         firstNameLabel: "First Name",
         lastNameLabel: "Last Name",
         activatedLabel: "Activated",
+        rolesLabel: "Roles"
     },
     profile: {
         profileLabel:"Edit profile info",

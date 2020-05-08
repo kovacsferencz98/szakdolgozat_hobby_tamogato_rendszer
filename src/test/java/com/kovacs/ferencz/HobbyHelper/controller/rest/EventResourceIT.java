@@ -2,13 +2,17 @@ package com.kovacs.ferencz.HobbyHelper.controller.rest;
 
 import com.kovacs.ferencz.HobbyHelper.TestUtil;
 import com.kovacs.ferencz.HobbyHelper.controller.rest.exceptions.ExceptionTranslator;
+import com.kovacs.ferencz.HobbyHelper.controller.rest.vm.CreateEventVM;
 import com.kovacs.ferencz.HobbyHelper.domain.*;
 import com.kovacs.ferencz.HobbyHelper.repository.*;
 import com.kovacs.ferencz.HobbyHelper.security.AuthoritiesConstants;
 import com.kovacs.ferencz.HobbyHelper.service.EventService;
 import com.kovacs.ferencz.HobbyHelper.service.LocationService;
 import com.kovacs.ferencz.HobbyHelper.service.dto.EventDTO;
+import com.kovacs.ferencz.HobbyHelper.service.dto.LocationDTO;
 import com.kovacs.ferencz.HobbyHelper.service.mapper.EventMapper;
+import com.kovacs.ferencz.HobbyHelper.service.mapper.LocationMapper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -91,6 +95,9 @@ public class EventResourceIT {
     private LocationService locationService;
 
     @Autowired
+    private LocationMapper locationMapper;
+
+    @Autowired
     private EventService eventService;
 
     @Autowired
@@ -129,17 +136,28 @@ public class EventResourceIT {
             .setValidator(validator).build();
     }
 
+    @AfterEach
+    public void tearDown() {
+        clearDatabase();
+    }
+
     @Test
     @Transactional
     @WithMockUser(username="user", roles = {"USER", "ADMIN"})
     public void createEvent() throws Exception {
         //GIVEN
-        int databaseSizeBeforeCreate = eventRepository.findAll().size();
+        Location location = event.getLocation();
         EventDTO eventDTO = eventMapper.toDto(event);
+        LocationDTO locationDTO = locationMapper.toDto(location);
+        locationDTO.setId(null);
+        CreateEventVM createEventVM = new CreateEventVM();
+        createEventVM.setLocation(locationDTO);
+        createEventVM.setEvent(eventDTO);
+        int databaseSizeBeforeCreate = eventRepository.findAll().size();
         //WHEN
         restEventMockMvc.perform(post("/api/events")
             .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(eventDTO)))
+            .content(TestUtil.convertObjectToJsonBytes(createEventVM)))
             .andExpect(status().isCreated());
         //THEN
         List<Event> eventList = eventRepository.findAll();
@@ -150,7 +168,6 @@ public class EventResourceIT {
         assertThat(testEvent.getMaxAttendance()).isEqualTo(DEFAULT_MAX_ATTENDANCE);
         assertThat(testEvent.getMinAttendance()).isEqualTo(DEFAULT_MIN_ATTENDANCE);
         assertThat(testEvent.getCurrentAttendance()).isEqualTo(DEFAULT_CURRENT_ATTENDANCE);
-        assertThat(testEvent.getStartsAt()).isEqualTo(DEFAULT_STARTS_AT);
         assertThat(testEvent.getPrice()).isEqualTo(DEFAULT_PRICE);
     }
 
@@ -333,7 +350,6 @@ public class EventResourceIT {
             .andExpect(jsonPath("$.[*].maxAttendance").value(hasItem(DEFAULT_MAX_ATTENDANCE)))
             .andExpect(jsonPath("$.[*].minAttendance").value(hasItem(DEFAULT_MIN_ATTENDANCE)))
             .andExpect(jsonPath("$.[*].currentAttendance").value(hasItem(DEFAULT_CURRENT_ATTENDANCE)))
-            .andExpect(jsonPath("$.[*].startsAt").value(hasItem(DEFAULT_STARTS_AT)))
             .andExpect(jsonPath("$.[*].price").value(hasItem(DEFAULT_PRICE.doubleValue())));
     }
     
@@ -352,7 +368,6 @@ public class EventResourceIT {
             .andExpect(jsonPath("$.maxAttendance").value(DEFAULT_MAX_ATTENDANCE))
             .andExpect(jsonPath("$.minAttendance").value(DEFAULT_MIN_ATTENDANCE))
             .andExpect(jsonPath("$.currentAttendance").value(DEFAULT_CURRENT_ATTENDANCE))
-            .andExpect(jsonPath("$.startsAt").value(DEFAULT_STARTS_AT))
             .andExpect(jsonPath("$.price").value(DEFAULT_PRICE.doubleValue()));
     }
 
@@ -399,7 +414,6 @@ public class EventResourceIT {
         assertThat(testEvent.getMaxAttendance()).isEqualTo(UPDATED_MAX_ATTENDANCE);
         assertThat(testEvent.getMinAttendance()).isEqualTo(UPDATED_MIN_ATTENDANCE);
         assertThat(testEvent.getCurrentAttendance()).isEqualTo(UPDATED_CURRENT_ATTENDANCE);
-        assertThat(testEvent.getStartsAt()).isEqualTo(UPDATED_STARTS_AT);
         assertThat(testEvent.getPrice()).isEqualTo(UPDATED_PRICE);
     }
 

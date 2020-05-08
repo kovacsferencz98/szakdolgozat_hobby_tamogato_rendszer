@@ -13,6 +13,7 @@ import com.kovacs.ferencz.HobbyHelper.service.dto.EventDTO;
 import com.kovacs.ferencz.HobbyHelper.service.dto.EventParticipantDTO;
 import com.kovacs.ferencz.HobbyHelper.service.mapper.ChatMessageMapper;
 import com.kovacs.ferencz.HobbyHelper.service.mapper.EventParticipantMapper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -109,6 +110,11 @@ public class ChatControllerIT {
         message = initMessage();
         MockitoAnnotations.initMocks(this);
         underTest = new ChatController(messagingTemplate, chatMessageService, eventService, userService, eventParticipantService, messageSource);
+    }
+
+    @AfterEach
+    public void tearDown() {
+        clearDatabase();
     }
 
     @Test

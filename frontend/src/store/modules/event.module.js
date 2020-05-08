@@ -139,6 +139,9 @@ const actions = {
 
     async createEvent({commit, dispatch}, {event, location}) {
         try {
+            console.log("Start create event");
+            console.log(event);
+            console.log(location);
             const response = await EventService.createEvent(event, location);
             console.log("Event created: " + response);
             await dispatch('getEvents');

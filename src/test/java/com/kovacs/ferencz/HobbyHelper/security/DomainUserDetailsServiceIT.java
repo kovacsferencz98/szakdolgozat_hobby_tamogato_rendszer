@@ -56,8 +56,6 @@ public class DomainUserDetailsServiceIT {
     public void init() {
         userRepository.deleteAll();
 
-        log.debug("" + userRepository.findAll());
-
         userOne = new User();
         userOne.setUsername(USER_ONE_LOGIN);
         userOne.setPassword(RandomStringUtils.random(60));
@@ -87,6 +85,12 @@ public class DomainUserDetailsServiceIT {
         userThree.setLastName("doe");
         userThree.setLangKey("en");
         userRepository.save(userThree);
+    }
+
+    @AfterEach
+    public void tearDown() {
+        userRepository.deleteAll();
+        userRepository.flush();
     }
 
     @Test

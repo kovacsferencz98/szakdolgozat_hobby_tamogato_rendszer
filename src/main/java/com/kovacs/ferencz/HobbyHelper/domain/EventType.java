@@ -30,11 +30,11 @@ public class EventType implements Serializable {
     private String description;
 
     @NotNull
-    @Column(name = "icon", nullable = false, unique = true)
+    @Column(name = "icon", unique = true)
     private String iconUrl;
 
     @NotNull
-    @Column(name = "banner", nullable = false, unique = true)
+    @Column(name = "banner",  unique = true)
     private String bannerUrl;
 
     public Long getId() {

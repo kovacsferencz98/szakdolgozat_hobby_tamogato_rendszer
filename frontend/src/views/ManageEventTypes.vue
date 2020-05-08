@@ -87,7 +87,6 @@
                                                                         :label="$t('manageEventTypes.iconLabel')"
                                                                         id="iconUpload"
                                                                         @change="handleIconUpload"
-                                                                        :error-messages="iconUrlErrors"
                                                                         @blur="$v.editedItem.iconUrl.$touch()"/>
                                                             </v-flex>
                                                             <v-flex
@@ -105,7 +104,6 @@
                                                                         :label="$t('manageEventTypes.bannerLabel')"
                                                                         id="bannerUpload"
                                                                         @change="handleBannerUpload"
-                                                                        :error-messages="bannerUrlErrors"
                                                                         @blur="$v.editedItem.bannerUrl.$touch()"/>
                                                             </v-flex>
                                                             <v-flex xs12>
@@ -134,7 +132,7 @@
 
                                             <v-card-actions>
                                                 <v-spacer></v-spacer>
-                                                <v-btn color="blue darken-1" text @click="close">{{$t('cancelLabel')}}"</v-btn>
+                                                <v-btn color="blue darken-1" text @click="close">{{$t('cancelLabel')}}</v-btn>
                                                 <v-btn color="blue darken-1" text @click="save">{{$t('saveLabel')}}</v-btn>
                                             </v-card-actions>
                                         </v-card>
@@ -207,8 +205,6 @@
             editedItem : {
                 name: {required},
                 description: {required},
-                iconUrl: {required},
-                bannerUrl: {required},
             }
         },
 
@@ -267,19 +263,6 @@
                 !this.$v.editedItem.description.required && errors.push(this.$t("requiredError", [this.$t('manageEventTypes.descriptionLabel')]));
                 return errors;
             },
-            iconUrlErrors () {
-                const errors = [];
-                if (!this.$v.editedItem.iconUrl.$dirty) return errors;
-                !this.$v.editedItem.iconUrl.required &&  errors.push(this.$t("requiredError", [this.$t('manageEventTypes.iconLabel')]));
-                return errors;
-            },
-            bannerUrlErrors () {
-                const errors = [];
-                if (!this.$v.editedItem.bannerUrl.$dirty) return errors;
-                !this.$v.editedItem.bannerUrl.required &&  errors.push(this.$t("requiredError", [this.$t('manageEventTypes.bannerLabel')]));
-                return errors;
-            },
-
         },
         watch: {
             dialog (val) {

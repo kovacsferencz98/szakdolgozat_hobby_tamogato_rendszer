@@ -6,6 +6,7 @@ import com.kovacs.ferencz.HobbyHelper.repository.EventTypeRepository;
 import com.kovacs.ferencz.HobbyHelper.service.dto.EventTypeDTO;
 import com.kovacs.ferencz.HobbyHelper.service.mapper.EventMapper;
 import com.kovacs.ferencz.HobbyHelper.service.mapper.EventTypeMapper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,6 +44,11 @@ public class EventTypeServiceIT {
         eventType = initEventType();
     }
 
+    @AfterEach
+    public void tearDown() {
+        clearDatabase();
+    }
+
     @Test
     @Transactional
     void saveShouldCreateDatabaseEntity() {
@@ -54,9 +60,10 @@ public class EventTypeServiceIT {
         Optional<EventType> saved = eventTypeRepository.findById(response.getId());
         assertTrue(saved.isPresent());
         EventType eventTypeObtained = saved.get();
-        eventTypeObtained.setId(null);
-        eventType.setId(null);
-        assertEquals(eventType, eventTypeObtained);
+        assertEquals(eventType.getName(), eventTypeObtained.getName());
+        assertEquals(eventType.getDescription(), eventTypeObtained.getDescription());
+        assertEquals(eventType.getBannerUrl(), eventTypeObtained.getBannerUrl());
+        assertEquals(eventType.getIconUrl(), eventTypeObtained.getIconUrl());
     }
 
     @Test
@@ -107,7 +114,6 @@ public class EventTypeServiceIT {
         Optional<EventType> entity = eventTypeRepository.findById(saved.getId());
         assertFalse(entity.isPresent());
     }
-
 
     private void clearDatabase() {
         eventTypeRepository.deleteAll();

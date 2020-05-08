@@ -3,6 +3,8 @@ package com.kovacs.ferencz.HobbyHelper.service.impl;
 import com.kovacs.ferencz.HobbyHelper.domain.*;
 import com.kovacs.ferencz.HobbyHelper.repository.UserDetailsRepository;
 import com.kovacs.ferencz.HobbyHelper.security.AuthoritiesConstants;
+import com.kovacs.ferencz.HobbyHelper.service.LocationService;
+import com.kovacs.ferencz.HobbyHelper.service.PictureService;
 import com.kovacs.ferencz.HobbyHelper.service.dto.UserDetailsDTO;
 import com.kovacs.ferencz.HobbyHelper.service.dto.UserDetailsDTO;
 import com.kovacs.ferencz.HobbyHelper.service.mapper.UserDetailsMapper;
@@ -10,6 +12,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
+import org.mockito.InOrder;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -34,6 +38,12 @@ class UserDetailsServiceImplTest {
 
     @MockBean
     private UserDetailsMapper userDetailsMapper;
+
+    @MockBean
+    private LocationService locationService;
+
+    @MockBean
+    private PictureService pictureService;
 
     @Autowired
     private UserDetailsServiceImpl underTest;
@@ -116,11 +126,17 @@ class UserDetailsServiceImplTest {
     void deleteShouldDeleteEntity() {
         //GIVEN
         given(userDetailsRepository.findOneByUser_Id(anyLong())).willReturn(Optional.of(userDetails));
+        given(userDetailsRepository.findById(anyLong())).willReturn(Optional.of(userDetails));
         given(userDetailsMapper.toDto(any(UserDetails.class))).willReturn(userDetailsDTO);
         //WHEN
         underTest.deleteDetailOfUser(userDetails.getUser().getId());
         //THEN
-        verify(userDetailsRepository).delete(userDetails);
+        InOrder inOrder = Mockito.inOrder(userDetailsRepository, locationService, pictureService);
+        inOrder.verify(userDetailsRepository).findOneByUser_Id(userDetailsDTO.getUserId());
+        inOrder.verify(userDetailsRepository).findById(userDetailsDTO.getId());
+        inOrder.verify(userDetailsRepository).deleteById(userDetailsDTO.getId());
+        inOrder.verify(locationService).delete(userDetailsDTO.getResidenceId());
+        inOrder.verify(pictureService).deleteFile(userDetailsDTO.getProfilePicId());
     }
 
     public UserDetailsDTO initUserDetailsDTO() {

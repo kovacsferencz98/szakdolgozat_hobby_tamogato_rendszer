@@ -7,6 +7,7 @@ import com.kovacs.ferencz.HobbyHelper.security.AuthoritiesConstants;
 import com.kovacs.ferencz.HobbyHelper.service.dto.UserDTO;
 import com.kovacs.ferencz.HobbyHelper.service.util.RandomUtil;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -77,6 +78,12 @@ public class UserServiceIT {
         user.setFirstName(DEFAULT_FIRSTNAME);
         user.setLastName(DEFAULT_LASTNAME);
         user.setLangKey(DEFAULT_LANGKEY);
+    }
+
+    @AfterEach
+    public void tearDown() {
+        userRepository.deleteAll();
+        userRepository.flush();
     }
 
     @Test

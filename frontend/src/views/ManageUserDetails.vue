@@ -55,27 +55,9 @@
                                             </v-card-title>
 
                                             <v-card-text>
-                                                <v-form id="editForm"  @submit.prevent="save">
+                                                <v-form id="editForm"  @submit.prevent="uploadPicture">
                                                     <v-container py-0>
                                                         <v-layout wrap>
-                                                            <v-flex
-                                                                    xs12
-                                                                    md6
-                                                                    pa-md-4 mx-lg-auto
-                                                            >
-                                                                <v-file-input
-                                                                        v-model="file"
-                                                                        :rules="rules"
-                                                                        ref="fileupload"
-                                                                        accept="image/png, image/jpeg, image/bmp"
-                                                                        :placeholder="$t('manageUserDetails.avatarText')"
-                                                                        prepend-icon="mdi-camera"
-                                                                        :label="$t('manageUserDetails.avatarLabel')"
-                                                                        id="fileupload"
-                                                                        @change="handleFileUpload"
-                                                                        :error-messages="profilePicUrlErrors"
-                                                                        @blur="$v.editedItem.profilePicUrl.$touch()"/>
-                                                            </v-flex>
                                                             <v-flex
                                                                     xs12
                                                                     pa-md-4 mx-lg-auto
@@ -204,13 +186,28 @@
                                                             >
                                                                 <v-text-field
                                                                         class="purple-input"
-                                                                        label="$t('manageEvents.countryLabel')"
+                                                                        :label="$t('manageEvents.countryLabel')"
                                                                         v-model="editedLocation.country"
                                                                         name="country"
                                                                         required
                                                                         :error-messages="countryErrors"
                                                                         @input="$v.editedLocation.country.$touch()"
                                                                         @blur="$v.editedLocation.country.$touch()"
+                                                                />
+                                                            </v-flex>
+                                                            <v-flex
+                                                                    xs12
+                                                                    pa-md-4 mx-lg-auto
+                                                            >
+                                                                <v-file-input
+                                                                        :rules="rules"
+                                                                        accept="image/png, image/jpeg, image/bmp"
+                                                                        :placeholder="$t('register.avatarText')"
+                                                                        prepend-icon="mdi-camera"
+                                                                        :label="$t('register.avatarLabel')"
+                                                                        id="file"
+                                                                        ref="file"
+                                                                        @change="handleFileUpload"
                                                                 />
                                                             </v-flex>
                                                         </v-layout>
@@ -228,7 +225,7 @@
                                             <v-card-actions>
                                                 <v-spacer></v-spacer>
                                                 <v-btn color="blue darken-1" text @click="close">{{$t('cancelLabel')}}</v-btn>
-                                                <v-btn color="blue darken-1" text @click="save">{{$t('saveLabel')}}</v-btn>
+                                                <v-btn color="blue darken-1" text @click="uploadPicture">{{$t('saveLabel')}}</v-btn>
                                             </v-card-actions>
                                         </v-card>
                                     </v-dialog>
@@ -291,20 +288,18 @@
 <script>
     import User from "../models/user";
     import {validationMixin} from "vuelidate";
-    import {required, helpers, maxLength, minValue} from "vuelidate/lib/validators";
+    import {required, maxLength, minValue} from "vuelidate/lib/validators";
     import {mapActions, mapGetters} from "vuex";
     import UserDetails from "../models/user-details";
     import Location from "../models/location";
     import gmapsInit from "../plugins/gmaps";
-    const tel = helpers.regex('tel', /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s./0-9]*$/);
+    import PictureService from "../services/picture.service";
 
     export default {
         mixins: [validationMixin],
         validations: {
             editedItem : {
                 description: {required},
-                phoneNumber: {required, tel: tel},
-                profilePicUrl: {required},
                 userUsername: {required}
             },
             editedLocation : {
@@ -344,6 +339,7 @@
                 { text: vm.$t('actionsLabel'), value: 'action', sortable: false },
             ],
             editedIndex: -1,
+            freeUserUsernames: [],
             editedItem: new UserDetails(),
             defaultItem: new UserDetails(),
             editedLocation: new Location(),
@@ -379,10 +375,6 @@
                 console.log(freeUsers);
                 return freeUsers;
 
-            },
-
-            freeUserUsernames() {
-                return this.freeUsers.map(user => user.username);
             },
 
             locationList() {
@@ -502,13 +494,19 @@
                     this.getLocations();
                 }
             },
-            editItem (item) {
+            findFreeUserUsernames() {
+                return this.freeUsers.map(user => user.username);
+            },
+            async editItem (item) {
                 console.log('Edit ' + this.allUserDetails.indexOf(item));
                 this.editedIndex = this.allUserDetails.indexOf(item);
                 this.editedItem = Object.assign({}, item);
-                this.getLocation(this.editedItem.locationId).then(() => {
-                    this.editedLocation = Object.assign({}, this.selectedLocation);
-                });
+                this.freeUserUsernames = this.findFreeUserUsernames();
+                if(this.editedIndex > -1) {
+                    this.freeUserUsernames.push(this.editedItem.userUsername);
+                }
+                await this.getLocation(this.editedItem.residenceId);
+                this.editedLocation = Object.assign({}, this.selectedLocation);
                 this.dialog = true
             },
             async deleteItem (item) {
@@ -601,12 +599,34 @@
                 }
                 return null;
             },
+            uploadPicture() {
+                console.log(this.file);
+                if(this.file) {
+                    this.$v.$touch();
+                    console.log("Start upload file");
+                    PictureService.savePicture(this.file).then(
+                        response => {
+                            console.log("Picture save success");
+                            this.editedItem.profilePicId = response.id;
+                            this.save();
+                        },
+                        error => {
+                            this.message = this.$t("pictureUploadError");
+                            console.log((error.response && error.response.data) ||
+                                error.message ||
+                                error.toString());
+                        }
+                    );
+                } else {
+                    console.log("No upload file");
+                    this.save();
+                }
+            },
             handleFileUpload(file){
-                console.log("File changed");
+                console.log("File changed: " + file.name);
                 if (!file.name)
                     return;
-                this.editedItem.profilePicUrl = file.name;
-                this.$v.editedItem.profilePicUrl.$touch();
+                this.file = file;
             },
             extractResidenceId(listItem) {
                 var endIdx = listItem.indexOf(':');

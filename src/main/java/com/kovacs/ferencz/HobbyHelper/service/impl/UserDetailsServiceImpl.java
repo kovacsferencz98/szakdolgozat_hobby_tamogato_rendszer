@@ -5,6 +5,8 @@ import com.kovacs.ferencz.HobbyHelper.domain.Location;
 import com.kovacs.ferencz.HobbyHelper.domain.User;
 import com.kovacs.ferencz.HobbyHelper.domain.UserDetails;
 import com.kovacs.ferencz.HobbyHelper.repository.UserDetailsRepository;
+import com.kovacs.ferencz.HobbyHelper.service.LocationService;
+import com.kovacs.ferencz.HobbyHelper.service.PictureService;
 import com.kovacs.ferencz.HobbyHelper.service.UserDetailsService;
 import com.kovacs.ferencz.HobbyHelper.service.dto.UserDetailsDTO;
 import com.kovacs.ferencz.HobbyHelper.service.mapper.UserDetailsMapper;
@@ -31,9 +33,16 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final UserDetailsMapper userDetailsMapper;
 
-    public UserDetailsServiceImpl(UserDetailsRepository userDetailsRepository, UserDetailsMapper userDetailsMapper) {
+    private final LocationService locationService;
+
+    private final PictureService pictureService;
+
+    public UserDetailsServiceImpl(UserDetailsRepository userDetailsRepository, UserDetailsMapper userDetailsMapper,
+                                  LocationService locationService, PictureService pictureService) {
         this.userDetailsRepository = userDetailsRepository;
         this.userDetailsMapper = userDetailsMapper;
+        this.locationService = locationService;
+        this.pictureService = pictureService;
     }
 
     /**
@@ -113,9 +122,15 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public void delete(Long id) {
         log.debug("Request to delete UserDetails : {}", id);
+        Optional<UserDetailsDTO> userDetails = findOne(id);
         userDetailsRepository.deleteById(id);
+        userDetails.ifPresent(userDetailsDTO -> {
+            locationService.delete(userDetailsDTO.getResidenceId());
+            if(userDetailsDTO.getProfilePicId() != null) {
+                pictureService.deleteFile(userDetailsDTO.getProfilePicId());
+            }
+        });
     }
-
 
     /**
      * Delete the userDetails of the given user
@@ -125,7 +140,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public void deleteDetailOfUser(Long userId) {
         userDetailsRepository.findOneByUser_Id(userId)
-                .ifPresent(userDetails -> userDetailsRepository.delete(userDetails));
+                .ifPresent(userDetails -> delete(userDetails.getId()));
     }
 
     /**

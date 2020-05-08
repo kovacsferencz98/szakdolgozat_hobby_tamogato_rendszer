@@ -146,7 +146,7 @@
                                                                     md4>
                                                                 <v-text-field
                                                                         class="purple-input"
-                                                                        label="$t('manageLocations.countryLabel')"
+                                                                        :label="$t('manageLocations.countryLabel')"
                                                                         v-model="editedItem.country"
                                                                         name="country"
                                                                         required
@@ -414,17 +414,18 @@
                         this.editedItem.latitude = results[0].geometry.location.lat();
                         this.editedItem.longitude = results[0].geometry.location.lng();
                         console.log(results[0].geometry.location.lat() + " " + results[0].geometry.location.lng());
+
+                        if (this.editedIndex > -1) {
+                            this.update();
+                        } else {
+                            this.createNew();
+                        }
                     });
-                    if (this.editedIndex > -1) {
-                        this.update();
-                    } else {
-                        this.createNew();
-                    }
                 }
             },
             async update() {
                 let requestOk = await this.updateLocation(this.editedItem);
-                if(requestOk) {
+                if(!requestOk) {
                     this.message = this.locationObtainError;
                 } else {
                     this.close()

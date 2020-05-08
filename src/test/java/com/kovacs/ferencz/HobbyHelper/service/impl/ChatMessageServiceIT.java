@@ -8,6 +8,7 @@ import com.kovacs.ferencz.HobbyHelper.service.UserService;
 import com.kovacs.ferencz.HobbyHelper.service.dto.ChatMessageDTO;
 import com.kovacs.ferencz.HobbyHelper.service.mapper.ChatMessageMapper;
 import org.hibernate.loader.plan.build.internal.LoadGraphLoadPlanBuildingStrategy;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -68,6 +69,11 @@ class ChatMessageServiceIT {
         chatMessage = initMessage();
     }
 
+    @AfterEach
+    public void tearDown() {
+        clearDatabase();
+    }
+
     @Test
     @Transactional
     void assertThatMessageCanBeSaved() {
@@ -79,8 +85,7 @@ class ChatMessageServiceIT {
         Optional<ChatMessage> savedMessage = chatMessageRepository.findById(response.getId());
         assertTrue(savedMessage.isPresent());
         ChatMessage message = savedMessage.get();
-        chatMessage.setId(null);
-        message.setId(null);
+        chatMessage.setId(message.getId());
         assertEquals(chatMessage, message);
     }
 

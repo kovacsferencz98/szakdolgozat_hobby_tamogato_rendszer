@@ -17,6 +17,7 @@ import com.kovacs.ferencz.HobbyHelper.service.UserService;
 import com.kovacs.ferencz.HobbyHelper.service.dto.UserDTO;
 import com.kovacs.ferencz.HobbyHelper.service.mapper.UserMapper;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -119,6 +120,11 @@ public class UserResourceIT {
                 .setControllerAdvice(exceptionTranslator)
                 .setMessageConverters(jacksonMessageConverter)
                 .build();
+    }
+
+    @AfterEach
+    public void tearDown() {
+        clearDatabase();
     }
 
     @Test
@@ -298,7 +304,7 @@ public class UserResourceIT {
         List<User> userList = userRepository.findAll();
         assertThat(userList).hasSize(databaseSizeBeforeUpdate);
         User testUser = userList.get(userList.size() - 1);
-        assertThat(testUser.getUsername()).isEqualTo(UPDATED_LOGIN);
+        assertThat(testUser.getUsername()).isEqualTo(UPDATED_LOGIN.toLowerCase());
         assertThat(testUser.getFirstName()).isEqualTo(UPDATED_FIRSTNAME);
         assertThat(testUser.getLastName()).isEqualTo(UPDATED_LASTNAME);
         assertThat(testUser.getEmail()).isEqualTo(UPDATED_EMAIL);

@@ -7,6 +7,7 @@ import com.kovacs.ferencz.HobbyHelper.security.AuthoritiesConstants;
 import com.kovacs.ferencz.HobbyHelper.service.dto.LocationDTO;
 import com.kovacs.ferencz.HobbyHelper.service.mapper.LocationMapper;
 import com.kovacs.ferencz.HobbyHelper.service.mapper.LocationMapper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -50,6 +51,11 @@ public class LocationServiceIT {
         location = initLocation();
     }
 
+    @AfterEach
+    public void tearDown() {
+        clearDatabase();
+    }
+
     @Test
     @Transactional
     void registerLocationShouldCreateDatabaseEntity() {
@@ -62,8 +68,7 @@ public class LocationServiceIT {
         Optional<Location> saved = locationRepository.findById(response.getId());
         assertTrue(saved.isPresent());
         Location locationObtained = saved.get();
-        locationObtained.setId(null);
-        this.location.setId(null);
+        this.location.setId(locationObtained.getId());
         assertEquals(this.location, locationObtained);
     }
 
@@ -78,8 +83,7 @@ public class LocationServiceIT {
         Optional<Location> saved = locationRepository.findById(response.getId());
         assertTrue(saved.isPresent());
         Location locationObtained = saved.get();
-        locationObtained.setId(null);
-        this.location.setId(null);
+        this.location.setId(locationObtained.getId());
         assertEquals(this.location, locationObtained);
     }
 

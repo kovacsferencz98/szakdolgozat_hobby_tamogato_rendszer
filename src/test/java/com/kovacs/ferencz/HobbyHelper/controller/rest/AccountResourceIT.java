@@ -20,6 +20,7 @@ import com.kovacs.ferencz.HobbyHelper.service.UserService;
 import com.kovacs.ferencz.HobbyHelper.service.dto.PasswordChangeDTO;
 import com.kovacs.ferencz.HobbyHelper.service.dto.UserDTO;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -134,6 +135,11 @@ public class AccountResourceIT {
                 .build();
 
         user = initUser();
+    }
+
+    @AfterEach
+    public void tearDown() {
+        clearDatabase();
     }
 
     @Test
@@ -283,7 +289,6 @@ public class AccountResourceIT {
     @Transactional
     public void testRegisterDuplicateLogin() throws Exception {
         //GIVEN
-        // First registration
         RegistrationVM firstUser = createRegistrationVM();
         firstUser.setUsername("alice");
         firstUser.setPassword("password");
@@ -302,26 +307,30 @@ public class AccountResourceIT {
         secondUser.setEmail("alice2@example.com");
         secondUser.setLangKey(firstUser.getLangKey());
         secondUser.setRoles(new HashSet<>(firstUser.getRoles()));
-        //WHEN
-        // First user
+
         restMvc.perform(
                 post("/api/register")
                         .contentType(TestUtil.APPLICATION_JSON_UTF8)
                         .content(TestUtil.convertObjectToJsonBytes(firstUser)))
                 .andExpect(status().isCreated());
+        Optional<User> testUser1 = userRepository.findOneByUsername("alice");
+        assertThat(testUser1.isPresent()).isTrue();
+        User registeredUser = testUser1.get();
+        registeredUser.setActivated(true);
+        userRepository.saveAndFlush(registeredUser);
+        //WHEN
         //THEN
-        // Second (non activated) user
         restMvc.perform(
                 post("/api/register")
                         .contentType(TestUtil.APPLICATION_JSON_UTF8)
                         .content(TestUtil.convertObjectToJsonBytes(secondUser)))
-                .andExpect(status().isInternalServerError());
+                .andExpect(status().isBadRequest());
     }
 
     @Test
     @Transactional
     public void testRegisterDuplicateEmail() throws Exception {
-        // First user
+        //GIVEN
         RegistrationVM firstUser = createRegistrationVM();
         firstUser.setUsername("test-register-1");
         firstUser.setPassword("password");
@@ -329,6 +338,7 @@ public class AccountResourceIT {
         firstUser.setLastName("Test");
         firstUser.setEmail("test-register-duplicate-email@example.com");
         firstUser.setLangKey(Constants.DEFAULT_LANGUAGE);
+        firstUser.setActivated(true);
         firstUser.setRoles(Collections.singleton(AuthoritiesConstants.USER));
 
         // Register first user
@@ -340,6 +350,9 @@ public class AccountResourceIT {
 
         Optional<User> testUser1 = userRepository.findOneByUsername("test-register-1");
         assertThat(testUser1.isPresent()).isTrue();
+        User registeredUser = testUser1.get();
+        registeredUser.setActivated(true);
+        userRepository.saveAndFlush(registeredUser);
 
         // Duplicate email, different login
         RegistrationVM secondUser = createRegistrationVM();
@@ -351,12 +364,13 @@ public class AccountResourceIT {
         secondUser.setLangKey(firstUser.getLangKey());
         secondUser.setRoles(new HashSet<>(firstUser.getRoles()));
 
-        // Register second (non activated) user
+        //WHEN
+        //THEN
         restMvc.perform(
                 post("/api/register")
                         .contentType(TestUtil.APPLICATION_JSON_UTF8)
                         .content(TestUtil.convertObjectToJsonBytes(secondUser)))
-                .andExpect(status().isInternalServerError());
+                .andExpect(status().isBadRequest());
     }
 
     @Test

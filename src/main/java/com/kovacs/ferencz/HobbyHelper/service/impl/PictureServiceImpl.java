@@ -78,4 +78,15 @@ public class PictureServiceImpl implements PictureService {
         log.debug("Request to get Picture : {}", fileId);
         return pictureRepository.findById(fileId).map(pictureMapper::toDto);
     }
+
+    /**
+     * Deletes Picture with id
+     *
+     * @param fileId the id of the Picture entity
+     */
+    @Override
+    public void deleteFile(Long fileId) {
+        pictureRepository.deleteById(fileId);
+    }
+
 }

@@ -803,20 +803,25 @@
                     let addressString = this.createAddress();
                     console.log("Geocode: " + addressString);
                     this.geocoder.geocode({address: addressString}, (results, status) => {
+                        console.log(status +  "  " + results);
                         if (status !== 'OK' || !results[0]) {
+                            console.log("problem");
                             throw new Error(status);
                         }
-                        this.editedItem.latitude = results[0].geometry.location.lat();
-                        this.editedItem.longitude = results[0].geometry.location.lng();
+                        this.editedLocation.latitude = results[0].geometry.location.lat();
+                        this.editedLocation.longitude = results[0].geometry.location.lng();
                         console.log(results[0].geometry.location.lat() + " " + results[0].geometry.location.lng());
 
                         this.editedItem.typeId=this.eventTypeIdOfName(this.editedItem.typeName);
                         this.editedItem.createdById = this.currentAccount.userId;
                         this.editedItem.createdByUsername = this.currentAccount.username;
                         this.editedItem.startsAt = this.startDate + ' ' + this.startTime;
+                        console.log("What to do");
                         if (this.editedIndex > -1) {
+                            console.log("Update");
                             this.update();
                         } else {
+                            console.log("Create new");
                            this.createNew();
                         }
                     });
@@ -837,7 +842,10 @@
                 }
             },
             async createNew() {
-               let eventOk = await this.createEvent(this.editedItem, this.editedLocation);
+                console.log("Create new");
+                console.log(this.editedItem);
+                console.log(this.editedLocation);
+               let eventOk = await this.createEvent({event: this.editedItem, location:this.editedLocation});
                 if(!eventOk) {
                     this.message = this.obtainEventError;
                 } else {

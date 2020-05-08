@@ -27,7 +27,7 @@ public class UserDetails implements Serializable {
     @Column(name = "description", nullable = false)
     private String description;
 
-    @OneToOne(cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToOne
     @JoinColumn(name="picture_id", referencedColumnName = "id", unique = true, nullable = true)
     private Picture profilePic;
 
@@ -35,7 +35,7 @@ public class UserDetails implements Serializable {
     @JoinColumn(name = "user_id", referencedColumnName = "id", unique = true)
     private User user;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "residence", referencedColumnName = "id")
     @JsonIgnoreProperties("userDetails")
     private Location residence;

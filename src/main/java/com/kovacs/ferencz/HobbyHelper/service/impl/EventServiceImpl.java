@@ -5,6 +5,7 @@ import com.kovacs.ferencz.HobbyHelper.repository.EventRepository;
 import com.kovacs.ferencz.HobbyHelper.service.ChatMessageService;
 import com.kovacs.ferencz.HobbyHelper.service.EventParticipantService;
 import com.kovacs.ferencz.HobbyHelper.service.EventService;
+import com.kovacs.ferencz.HobbyHelper.service.LocationService;
 import com.kovacs.ferencz.HobbyHelper.service.dto.EventDTO;
 import com.kovacs.ferencz.HobbyHelper.service.mapper.EventMapper;
 import org.slf4j.Logger;
@@ -12,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.LinkedList;
@@ -32,14 +34,17 @@ public class EventServiceImpl implements EventService {
 
     private final EventMapper eventMapper;
 
+    private final LocationService locationService;
+
     private final ChatMessageService chatMessageService;
 
     private final EventParticipantService eventParticipantService;
 
-    public EventServiceImpl(EventRepository eventRepository, EventMapper eventMapper,
+    public EventServiceImpl(EventRepository eventRepository, EventMapper eventMapper, LocationService locationService,
                             ChatMessageService chatMessageService, EventParticipantService eventParticipantService) {
         this.eventRepository = eventRepository;
         this.eventMapper = eventMapper;
+        this.locationService = locationService;
         this.chatMessageService = chatMessageService;
         this.eventParticipantService = eventParticipantService;
     }
@@ -134,7 +139,9 @@ public class EventServiceImpl implements EventService {
         log.debug("Request to delete Event : {}", id);
         chatMessageService.deleteMessagesOfEvent(id);
         eventParticipantService.deleteByEvent(id);
+        Optional<EventDTO> event = findOne(id);
         eventRepository.deleteById(id);
+        event.ifPresent(eventDTO -> locationService.delete(eventDTO.getLocationId()));
     }
 
     /**

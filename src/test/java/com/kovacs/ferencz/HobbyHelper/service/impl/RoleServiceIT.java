@@ -8,6 +8,7 @@ import com.kovacs.ferencz.HobbyHelper.security.AuthoritiesConstants;
 import com.kovacs.ferencz.HobbyHelper.service.dto.RoleDTO;
 import com.kovacs.ferencz.HobbyHelper.service.mapper.EventMapper;
 import com.kovacs.ferencz.HobbyHelper.service.mapper.RoleMapper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,6 +42,11 @@ public class RoleServiceIT {
     void setUp() {
         clearDatabase();
         role =  new Role(AuthoritiesConstants.USER);
+    }
+
+    @AfterEach
+    public void tearDown() {
+        clearDatabase();
     }
 
     @Test

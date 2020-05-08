@@ -10,6 +10,7 @@ import com.kovacs.ferencz.HobbyHelper.service.dto.PictureDTO;
 import com.kovacs.ferencz.HobbyHelper.service.dto.PictureDTO;
 import com.kovacs.ferencz.HobbyHelper.service.mapper.PictureMapper;
 import com.kovacs.ferencz.HobbyHelper.service.mapper.RoleMapper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,8 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
@@ -50,6 +50,11 @@ public class PictureServiceIT {
         picture =  initPicture();
     }
 
+    @AfterEach
+    public void tearDown() {
+        clearDatabase();
+    }
+
     @Test
     @Transactional
     void storeFileShouldCreateDatabaseEntity() {
@@ -61,9 +66,9 @@ public class PictureServiceIT {
         Optional<Picture> saved = pictureRepository.findById(response.getId());
         assertTrue(saved.isPresent());
         Picture pictureObtained = saved.get();
-        pictureObtained.setId(null);
-        picture.setId(null);
-        assertEquals(picture, pictureObtained);
+        assertArrayEquals(picture.getData(), pictureObtained.getData());
+        assertEquals(picture.getFileName(), pictureObtained.getFileName());
+        assertEquals(picture.getFileType(), pictureObtained.getFileType());
     }
 
     @Test

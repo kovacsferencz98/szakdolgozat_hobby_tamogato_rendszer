@@ -341,24 +341,24 @@
             filterAttendance(events) {
                 let result = events;
                 if(this.minAttendance) {
-                    result = result.filter(event => event.currentAttendance > this.minAttendance)
+                    result = result.filter(event => event.currentAttendance >= this.minAttendance)
                 }
                 if(this.maxAttendance) {
-                    result = result.filter(event => event.currentAttendance < this.maxAttendance)
+                    result = result.filter(event => event.currentAttendance <= this.maxAttendance)
                 }
                 return result;
             },
             filterDistance(events) {
                 let result = events;
-                if(this.distance) {
+                if(this.distance && this.distance.value) {
                     result = result.filter(this.checkEventDistance)
                 }
                 return result;
             },
             checkEventDistance(event) {
                 var eventLocation =this.findLocationForEvent(event);
-                var distance = this.getDistanceFromLatLonInKm(eventLocation.latitude, eventLocation.longitude, this.userLocation.latitude, this.userLocation.longitude);
-                return distance <= this.distance;
+                var calculatedDistance = this.getDistanceFromLatLonInKm(eventLocation.latitude, eventLocation.longitude, this.userLocation.lat, this.userLocation.lng);
+                return calculatedDistance <= this.distance.value;
             },
 
             getDistanceFromLatLonInKm(lat1,lon1,lat2,lon2) {

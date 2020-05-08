@@ -35,10 +35,6 @@ public class TokenProvider implements InitializingBean {
 
     private Key key;
 
-    @Value("${security.jwt.token.remember-me:0}")
-    private long tokenValidityInMillisecondsForRememberMe = 0;
-
-
     public TokenProvider() {
     }
 

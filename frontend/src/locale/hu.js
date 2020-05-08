@@ -12,6 +12,7 @@ export default {
     searchLabel: "Keresés",
     actionsLabel: "Műveletek",
     cancelLabel:"Kilépés",
+    closeLabel: "Kilépés",
     okLabel:"OK",
     saveLabel: "Mentés",
     newItemLabel: "Új elem",
@@ -149,7 +150,7 @@ export default {
     },
     manageEventTypes: {
         manageEventTypesLabel: "Esemény típusok kezelése",
-        manageEventTypesTexT: "Törölhetsz, szerkeszthetsz és hozzáadhatsz esemény típusokat",
+        manageEventTypesText: "Törölhetsz, szerkeszthetsz és hozzáadhatsz esemény típusokat",
         typeName:"Esemény típus neve",
         iconLabel: "Ikon",
         bannerLabel: "Borító kép",
@@ -194,6 +195,7 @@ export default {
         firstNameLabel: "Keresztnév",
         lastNameLabel: "Vezetéknév",
         activatedLabel: "Aktiválva",
+        rolesLabel: "Szerepkör"
     },
     profile: {
         profileLabel:"Profil adatok szerkesztése",

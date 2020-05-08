@@ -198,7 +198,7 @@ const EventService = {
      */
     leaveEvent: async function(id) {
         const requestData = {
-            method: 'post',
+            method: 'delete',
             url: "/leave-event/"+id+"/",
             data: {}
         };
@@ -282,11 +282,13 @@ const EventService = {
      * @throws ApiRequestError
      **/
     createEvent: async function(event, location) {
+        console.log("Start of create");
         try {
-            console.log("Create event : " + event.id);
+            console.log("Post event");
+            console.log(event);
+            console.log(location);
             const response = await ApiService.post('/events/', {event:event, location:location});
             console.log(response);
-
             return response.data;
         } catch (error) {
             throw new ApiRequestError(error.response.status, (error.response.data.title || error.response.data.message));

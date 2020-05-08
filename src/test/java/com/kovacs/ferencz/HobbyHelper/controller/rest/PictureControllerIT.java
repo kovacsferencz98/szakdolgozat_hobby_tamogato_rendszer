@@ -8,6 +8,7 @@ import com.kovacs.ferencz.HobbyHelper.repository.PictureRepository;
 import com.kovacs.ferencz.HobbyHelper.service.PictureService;
 import com.kovacs.ferencz.HobbyHelper.service.dto.PictureDTO;
 import com.kovacs.ferencz.HobbyHelper.service.mapper.PictureMapper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -84,6 +85,11 @@ public class PictureControllerIT {
                 .setConversionService(createFormattingConversionService())
                 .setMessageConverters(jacksonMessageConverter)
                 .setValidator(validator).build();
+    }
+
+    @AfterEach
+    public void tearDown() {
+        clearDatabase();
     }
 
     @Transactional

@@ -370,7 +370,8 @@
                 console.log('Edit ' + this.allUsers.indexOf(item));
                 this.editedIndex = this.allUsers.indexOf(item);
                 this.editedItem = Object.assign({}, item);
-                this.dialog = true
+                this.dialog = true;
+                this.editedItem.password =  "pwdpwd";
             },
             async deleteItem (item) {
                 this.deleteMessage='';
@@ -411,7 +412,7 @@
             },
             async update() {
                 let userOk = await this.updateUser(this.editedItem);
-                if(userOk) {
+                if(!userOk) {
                     this.message = this.obtainError;
                 } else {
                     this.close()

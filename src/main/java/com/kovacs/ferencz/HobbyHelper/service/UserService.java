@@ -140,6 +140,7 @@ public class UserService {
             }
         });
         userRepository.findOneByEmailIgnoreCase(userDTO.getEmail()).ifPresent(existingUser -> {
+            log.debug("Try to remove duplicate: " + userDTO.getEmail());
             boolean removed = removeNonActivatedUser(existingUser);
             if (!removed) {
                 throw new EmailAlreadyUsedException();
@@ -363,8 +364,8 @@ public class UserService {
         if (existingUser.getActivated()) {
             return false;
         }
-        userRepository.delete(existingUser);
-        userRepository.flush();
+
+        deleteUser(existingUser.getUsername());
         return true;
     }
 

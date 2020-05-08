@@ -11,6 +11,7 @@ import com.kovacs.ferencz.HobbyHelper.security.AuthoritiesConstants;
 import com.kovacs.ferencz.HobbyHelper.service.BasicLocaleService;
 import com.kovacs.ferencz.HobbyHelper.service.UserService;
 import com.kovacs.ferencz.HobbyHelper.service.mapper.UserMapper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -115,6 +116,11 @@ public class LanguageControllerIT {
                 .setConversionService(createFormattingConversionService())
                 .setMessageConverters(jacksonMessageConverter)
                 .setValidator(validator).build();
+    }
+
+    @AfterEach
+    public void tearDown() {
+        clearDatabase();
     }
 
     @Test

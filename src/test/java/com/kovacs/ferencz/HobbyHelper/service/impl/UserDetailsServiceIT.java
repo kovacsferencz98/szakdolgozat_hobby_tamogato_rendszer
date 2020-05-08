@@ -7,6 +7,7 @@ import com.kovacs.ferencz.HobbyHelper.security.AuthoritiesConstants;
 import com.kovacs.ferencz.HobbyHelper.service.dto.UserDetailsDTO;
 import com.kovacs.ferencz.HobbyHelper.service.mapper.UserDetailsMapper;
 import com.kovacs.ferencz.HobbyHelper.service.mapper.UserDetailsMapper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -58,6 +59,11 @@ public class UserDetailsServiceIT {
         userDetails = initUserDetails();
     }
 
+    @AfterEach
+    public void tearDown() {
+        clearDatabase();
+    }
+
     @Test
     @Transactional
     void registerUserDetailsShouldCreateDatabaseEntity() {
@@ -69,8 +75,7 @@ public class UserDetailsServiceIT {
         Optional<UserDetails> saved = userDetailsRepository.findById(response.getId());
         assertTrue(saved.isPresent());
         UserDetails participant = saved.get();
-        participant.setId(null);
-        userDetails.setId(null);
+        userDetails.setId(participant.getId());
         assertEquals(userDetails, participant);
     }
 
@@ -85,8 +90,7 @@ public class UserDetailsServiceIT {
         Optional<UserDetails> saved = userDetailsRepository.findById(response.getId());
         assertTrue(saved.isPresent());
         UserDetails obtainedUserDetails = saved.get();
-        obtainedUserDetails.setId(null);
-        this.userDetails.setId(null);
+        this.userDetails.setId(obtainedUserDetails.getId());
         assertEquals(this.userDetails, obtainedUserDetails);
     }
 

@@ -12,6 +12,7 @@ import com.kovacs.ferencz.HobbyHelper.service.mapper.EventMapper;
 import com.kovacs.ferencz.HobbyHelper.service.mapper.LocationMapper;
 import com.kovacs.ferencz.HobbyHelper.service.mapper.UserDetailsMapper;
 import com.kovacs.ferencz.HobbyHelper.service.mapper.UserMapper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -147,7 +148,6 @@ public class ProfileControllerIT {
 
     @BeforeEach
     public void setup() {
-        clearDatabase();
         userDetails = initUserDetails();
         eventParticipant = initEventParticipant();
         MockitoAnnotations.initMocks(this);
@@ -161,6 +161,10 @@ public class ProfileControllerIT {
                 .setValidator(validator).build();
     }
 
+    @AfterEach
+    public void tearDown() {
+        clearDatabase();
+    }
 
     @Test
     @Transactional

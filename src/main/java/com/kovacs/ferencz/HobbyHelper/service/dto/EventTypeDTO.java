@@ -17,10 +17,8 @@ public class EventTypeDTO implements Serializable {
     @NotNull
     private String description;
 
-    @NotNull
     private String iconUrl;
 
-    @NotNull
     private String bannerUrl;
 
 

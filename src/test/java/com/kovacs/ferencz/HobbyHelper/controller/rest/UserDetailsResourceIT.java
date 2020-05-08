@@ -20,6 +20,7 @@ import com.kovacs.ferencz.HobbyHelper.service.dto.LocationDTO;
 import com.kovacs.ferencz.HobbyHelper.service.dto.UserDetailsDTO;
 import com.kovacs.ferencz.HobbyHelper.service.mapper.LocationMapper;
 import com.kovacs.ferencz.HobbyHelper.service.mapper.UserDetailsMapper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -120,6 +121,11 @@ public class UserDetailsResourceIT {
             .setConversionService(createFormattingConversionService())
             .setMessageConverters(jacksonMessageConverter)
             .setValidator(validator).build();
+    }
+
+    @AfterEach
+    public void tearDown() {
+        clearDatabase();
     }
 
     @Test

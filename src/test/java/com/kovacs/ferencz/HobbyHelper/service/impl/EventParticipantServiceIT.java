@@ -7,6 +7,7 @@ import com.kovacs.ferencz.HobbyHelper.security.AuthoritiesConstants;
 import com.kovacs.ferencz.HobbyHelper.service.dto.ChatMessageDTO;
 import com.kovacs.ferencz.HobbyHelper.service.dto.EventParticipantDTO;
 import com.kovacs.ferencz.HobbyHelper.service.mapper.EventParticipantMapper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -64,6 +65,11 @@ public class EventParticipantServiceIT {
         eventParticipant = initEventParticipant();
     }
 
+    @AfterEach
+    public void tearDown() {
+        clearDatabase();
+    }
+
     @Test
     @Transactional
     void createShouldCreateDatabaseEntity() {
@@ -77,8 +83,7 @@ public class EventParticipantServiceIT {
         Optional<EventParticipant> saved = eventParticipantRepository.findById(response.getId());
         assertTrue(saved.isPresent());
         EventParticipant participant = saved.get();
-        participant.setId(null);
-        eventParticipant.setId(null);
+        eventParticipant.setId(participant.getId());
         assertEquals(eventParticipant, participant);
     }
 
@@ -93,8 +98,7 @@ public class EventParticipantServiceIT {
         Optional<EventParticipant> saved = eventParticipantRepository.findById(response.getId());
         assertTrue(saved.isPresent());
         EventParticipant participant = saved.get();
-        participant.setId(null);
-        eventParticipant.setId(null);
+        eventParticipant.setId(participant.getId());
         assertEquals(eventParticipant, participant);
     }
 

@@ -14,6 +14,7 @@ import com.kovacs.ferencz.HobbyHelper.service.dto.EventDTO;
 import com.kovacs.ferencz.HobbyHelper.service.mapper.EventMapper;
 import com.kovacs.ferencz.HobbyHelper.service.mapper.EventParticipantMapper;
 import com.kovacs.ferencz.HobbyHelper.service.mapper.LocationMapper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -165,6 +166,11 @@ public class EventControllerIT {
                 .setConversionService(createFormattingConversionService())
                 .setMessageConverters(jacksonMessageConverter)
                 .setValidator(validator).build();
+    }
+
+    @AfterEach
+    public void tearDown() {
+        clearDatabase();
     }
 
     @Test

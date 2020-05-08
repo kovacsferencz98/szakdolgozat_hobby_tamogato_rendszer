@@ -9,6 +9,7 @@ import com.kovacs.ferencz.HobbyHelper.service.EventParticipantService;
 import com.kovacs.ferencz.HobbyHelper.service.EventService;
 import com.kovacs.ferencz.HobbyHelper.service.dto.EventParticipantDTO;
 import com.kovacs.ferencz.HobbyHelper.service.mapper.EventParticipantMapper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -122,6 +123,11 @@ public class EventParticipantResourceIT {
                 .setConversionService(createFormattingConversionService())
                 .setMessageConverters(jacksonMessageConverter)
                 .setValidator(validator).build();
+    }
+
+    @AfterEach
+    public void tearDown() {
+        clearDatabase();
     }
 
     @Test

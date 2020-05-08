@@ -16,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
+import org.springframework.web.filter.CommonsRequestLoggingFilter;
 import org.springframework.web.filter.CorsFilter;
 import org.zalando.problem.spring.web.advice.security.SecurityProblemSupport;
 
@@ -40,6 +41,18 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
+    @Bean
+    public CommonsRequestLoggingFilter logFilter() {
+        CommonsRequestLoggingFilter filter
+                = new CommonsRequestLoggingFilter();
+        filter.setIncludeQueryString(true);
+        filter.setIncludePayload(true);
+        filter.setMaxPayloadLength(10000);
+        filter.setIncludeHeaders(false);
+        filter.setAfterMessagePrefix("REQUEST DATA : ");
+        return filter;
+    }
+
     @Override
     public void configure(WebSecurity web) {
         web.ignoring()
@@ -55,9 +68,24 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     public void configure(HttpSecurity http) throws Exception {
         // @formatter:off
         http
+                .authorizeRequests()
+                .antMatchers("/api/authenticate/").permitAll()
+                .antMatchers("/index.html", "/webjars/**", "/js/**").permitAll()
+                //.antMatchers("/api/authenticate").permitAll()
+                .antMatchers("/api/register/").permitAll()
+                .antMatchers("/api/activate/").permitAll()
+                .antMatchers("/api/downloadPicture/**").permitAll()
+                .antMatchers("/api/account/reset-password/init/").permitAll()
+                .antMatchers("/api/account/reset-password/finish/").permitAll()
+                .antMatchers("/api/**").authenticated()
+                .antMatchers("/management/health/").permitAll()
+                .antMatchers("/management/info/").permitAll()
+                .antMatchers("/management/prometheus/").permitAll()
+                .antMatchers("/management/**").hasAuthority(AuthoritiesConstants.ADMIN)
+                .and()
                 .csrf()
                 .disable()
-                .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
+                //.addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling()
                 .authenticationEntryPoint(problemSupport)
                 .accessDeniedHandler(problemSupport)
@@ -74,17 +102,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .authorizeRequests()
-                .antMatchers("/index.html", "/webjars/**", "/js/**").permitAll()
-                .antMatchers("/api/authenticate").permitAll()
-                .antMatchers(HttpMethod.POST, "/api/authenticate").permitAll()
-                .antMatchers("/api/register").permitAll()
-                .antMatchers("/api/activate").permitAll()
-                .antMatchers("/api/account/reset-password/init").permitAll()
-                .antMatchers("/api/account/reset-password/finish").permitAll()
-                .antMatchers("/api/**").authenticated()
-                .antMatchers("/management/**").hasAuthority(AuthoritiesConstants.ADMIN)
                 .and()
                 .httpBasic()
                 .and()

@@ -6,6 +6,7 @@ import com.kovacs.ferencz.HobbyHelper.controller.rest.vm.LoginVM;
 import com.kovacs.ferencz.HobbyHelper.domain.User;
 import com.kovacs.ferencz.HobbyHelper.repository.UserRepository;
 import com.kovacs.ferencz.HobbyHelper.security.jwt.TokenProvider;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

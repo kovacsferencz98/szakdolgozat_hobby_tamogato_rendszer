@@ -10,6 +10,7 @@ import com.kovacs.ferencz.HobbyHelper.service.LocationService;
 import com.kovacs.ferencz.HobbyHelper.service.UserDetailsService;
 import com.kovacs.ferencz.HobbyHelper.service.dto.LocationDTO;
 import com.kovacs.ferencz.HobbyHelper.service.mapper.LocationMapper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -119,6 +120,11 @@ public class LocationResourceIT {
                 .setConversionService(createFormattingConversionService())
                 .setMessageConverters(jacksonMessageConverter)
                 .setValidator(validator).build();
+    }
+
+    @AfterEach
+    public void tearDown() {
+        clearDatabase();
     }
 
     @Test

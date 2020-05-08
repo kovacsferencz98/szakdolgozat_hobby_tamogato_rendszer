@@ -1,18 +1,25 @@
 <template>
     <v-container
             fill-height
+            fill-width
             fluid
+            style="width : 100%"
             grid-list-xl>
         <v-layout
+                fill-width
                 wrap
+                style="width : 100%"
         >
             <v-flex
                     xs12
+                    style="width : 100%"
             >
                 <material-card
+                        fill-width
                         color="#346C47"
                         :title="selectedEventDetail.eventDetails.name"
                         :text="selectedEventDetail.eventDetails.typeName"
+                        style="width : 100%"
                 >
                     <v-container
                             fill-height
@@ -69,7 +76,7 @@
                                                         length="5"
                                                         color="orange"
                                                         background-color="orange lighten-3"
-                                                        @input="rateEvent()"
+                                                        @input="handleRateEvent()"
                                                 />
                                             </v-row>
                                             <v-row
@@ -123,6 +130,7 @@
                                                 <v-spacer/>
                                                 <v-btn class="ma-2" outlined large fab  color="#346C47"
                                                        :to="{name:'Chat', params:{id:eventId}}"
+                                                       :disabled="!isUserApproved"
                                                 >
                                                     <v-icon  color="#346C47" >mdi-chat</v-icon>
                                                 </v-btn>
@@ -277,6 +285,19 @@
             ...mapGetters('eventType', [
                 'selectedEventType'
             ]),
+
+            ...mapGetters('auth', [
+                'currentAccount'
+            ]),
+
+            isUserApproved () {
+                if(this.selectedEventDetail.owner)
+                    return true;
+
+                const filtered = this.selectedEventDetail.participants.filter(participant => participant.userUsername === this.currentAccount.username);
+                console.log("filtered: "  + filtered);
+                return filtered[0].approved;
+            },
         },
         async mounted() {
             await this.initialize();
@@ -295,6 +316,7 @@
                 'rateEvent',
                 'rateEventParticipant',
                 'joinEvent',
+                'leaveEvent',
                 'approveEventParticipant',
                 'deleteEventParticipant'
             ]),
@@ -331,15 +353,15 @@
             async rateItem(item) {
                 this.message = '';
                 console.log("Rate participant: " + item.userUsername);
-                let requestOk = await this.rateEventParticipant(item.id, item.ratingOfParticipant);
+                let requestOk = await this.rateEventParticipant({eventParticipantId:item.id, rating:item.ratingOfParticipant});
                 if(!requestOk) {
                     this.message = this.obtainEventError;
                 }
             },
-            async rateEvent() {
+            async handleRateEvent() {
                 this.message = '';
                 console.log("Rate event: " + this.selectedEventDetail.ratingOfEventByUser);
-                let requestOk = await this.rateEvent(this.selectedEventDetail.eventDetails.id, this.selectedEventDetail.ratingOfEventByUser);
+                let requestOk = await this.rateEvent({eventId:this.selectedEventDetail.eventDetails.id, rating:this.selectedEventDetail.ratingOfEventByUser});
                 if(!requestOk) {
                     this.message = this.obtainEventError;
                 }

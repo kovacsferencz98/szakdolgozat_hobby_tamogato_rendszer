@@ -59,7 +59,7 @@ public class Event implements Serializable {
     @JsonIgnoreProperties("events")
     private EventType type;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "LOCATION")
     @JsonIgnoreProperties("event")
     private Location location;

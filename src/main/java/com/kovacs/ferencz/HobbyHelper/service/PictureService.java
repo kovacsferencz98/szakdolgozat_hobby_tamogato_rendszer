@@ -18,8 +18,16 @@ public interface PictureService {
 
     /**
      * Get Picture with id
-      * @param fileId the id of the Picture entity
+     * @param fileId the id of the Picture entity
      * @return the entity
      */
     Optional<PictureDTO> getFile(Long fileId);
+
+    /**
+     * Deletes Picture with id
+     * @param fileId the id of the Picture entity
+     */
+    void deleteFile(Long fileId);
+
+
 }

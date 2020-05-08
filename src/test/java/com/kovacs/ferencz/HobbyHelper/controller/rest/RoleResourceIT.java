@@ -5,6 +5,7 @@ import com.kovacs.ferencz.HobbyHelper.domain.Role;
 import com.kovacs.ferencz.HobbyHelper.repository.RoleRepository;
 import com.kovacs.ferencz.HobbyHelper.service.RoleService;
 import com.kovacs.ferencz.HobbyHelper.service.mapper.RoleMapper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -82,6 +83,11 @@ public class RoleResourceIT {
             .setConversionService(createFormattingConversionService())
             .setMessageConverters(jacksonMessageConverter)
             .setValidator(validator).build();
+    }
+
+    @AfterEach
+    public void tearDown() {
+        clearDatabase();
     }
 
     @Test
